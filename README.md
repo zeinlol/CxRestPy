@@ -16,9 +16,8 @@ https://checkmarx.atlassian.net/wiki/spaces/KC/pages/33980523/REST+API
 .
 |-- etc
 |   |-- config.json
-|   |-- git_config.json
-|   |-- git_config_use_ssh.json
-|   |-- project_config.json
+|   |-- git_config.json.template
+|   |-- git_config_use_ssh.json.template
 |   |-- project_config.json.template
 |   `-- urls.json
 |
