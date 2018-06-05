@@ -77,24 +77,8 @@ $ python Create_a_scan_and_get_report.py
 
 ---
 ## Flow Chart
+![avatar](https://raw.githubusercontent.com/binqsoft/CxRestPy/master/Lib/flow_chart.png)
 
-```flow
-st=>start: Start
-e=>end
-team=>condition: Create a new project?
-tid=>operation: Choose a team
-pname=>operation: Input project name
-pid=>operation: Choose a project
-upload=>operation: Upload local zip file
-scan=>operation: Start scan
-repotype=>operation: Choose report type
-report=>operation: Get report
-
-st->team(no)->pid->upload
-team(yes)->tid->pname->upload
-upload->repotype->scan
-scan->report->e
-```
  ## The method list provided in CxREST API
 
 | Method |  UnitTest | |
