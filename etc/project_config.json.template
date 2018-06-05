@@ -1,0 +1,10 @@
+{
+    "name": "Project Name",
+    "owningTeam": "Owning Team",
+    "isPublic": true,
+    "projectSetting": "local",
+    "zipPath": "Hadoop.zip",
+    "presetId": "1",
+    "engineConfigurationId": "5",
+    "reportType": "PDF",
+}
