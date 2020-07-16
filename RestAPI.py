@@ -63,11 +63,8 @@ class CxRestAPI(object):
                                        url_parameters.get("url_suffix"))
             s = requests.Session()
             headers = headers or self.headers
-            req = requests.Request(method=url_parameters.get("http_method"),
-                                   headers=headers, cookies=self.cookies,
-                                   url=url, data=data)
-            prepped = req.prepare()
-            resp = s.send(prepped)
+
+            resp = requests.request(method=url_parameters.get("http_method"), headers=self.headers, url=url, data=data)
             if resp.status_code == 200:
                 if headers.get("Accept") == "application/json;v=1.0":
                     return resp
