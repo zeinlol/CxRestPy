@@ -12,10 +12,9 @@ class CxRestAPI(object):
     def __init__(self):
         self.server, self.username, self.password = self.get_config()
         self.urls = self.get_urls()
-        self.cookies = self.login()
-        self.headers = self.cookies.copy()
-        self.headers.update({"Accept": "application/json;v=1.0",
-                             "api-version": "2.0"})
+        self.token = self.get_token()
+        self.headers = self.token.copy()
+        self.headers.update({"cxOrigin": "CxRestAPI"})
         pass
 
     def get_config(self):
@@ -105,38 +104,39 @@ class CxRestAPI(object):
                 "client_id": "resource_owner_client",
                 "client_secret": '014DF517-39D1-4453-B7B3-9930C563627C'}
         url = self.server + self.urls.get("token").get("url_suffix")
-        token = requests.post(url=url, data=data)
-        return token.json()
+        token = requests.post(url=url, data=data).json()
+        return {'Authorization': '{} {}'.format(token['token_type'], token['access_token'])}
 
-    def login(self):
-        """
-        实现登录功能，用于拿到cookie，获得执行后续操作权限。
-        :return: dict
-                {
-                    "cxCookie": cx_cookie,
-                    "CXCSRFToken": cx_csrf_token,
-                }
-        """
-        data = {
-            "username": self.username,
-            "password": self.password
-        }
-        try:
-            url = self.server + self.urls.get("login").get("url_suffix")
-            r = requests.post(url, data=data)
-            if r.status_code == 200:
-                cx_cookie = r.cookies.get("cxCookie")
-                cx_csrf_token = r.cookies.get("CXCSRFToken")
-                return {
-                    "cxCookie": cx_cookie,
-                    "CXCSRFToken": cx_csrf_token,
-                }
-            elif r.status_code == 400:
-                raise Exception(" 400 Bad Request. ")
-            else:
-                raise Exception(" login Failed. ")
-        except Exception as e:
-            raise Exception("Unable to get cookies: {} .".format(e))
+    # # 已弃用
+    # def login(self):
+    #     """
+    #     实现登录功能，用于拿到cookie，获得执行后续操作权限。
+    #     :return: dict
+    #             {
+    #                 "cxCookie": cx_cookie,
+    #                 "CXCSRFToken": cx_csrf_token,
+    #             }
+    #     """
+    #     data = {
+    #         "username": self.username,
+    #         "password": self.password
+    #     }
+    #     try:
+    #         url = self.server + self.urls.get("login").get("url_suffix")
+    #         r = requests.post(url, data=data)
+    #         if r.status_code == 200:
+    #             cx_cookie = r.cookies.get("cxCookie")
+    #             cx_csrf_token = r.cookies.get("CXCSRFToken")
+    #             return {
+    #                 "cxCookie": cx_cookie,
+    #                 "CXCSRFToken": cx_csrf_token,
+    #             }
+    #         elif r.status_code == 400:
+    #             raise Exception(" 400 Bad Request. ")
+    #         else:
+    #             raise Exception(" login Failed. ")
+    #     except Exception as e:
+    #         raise Exception("Unable to get cookies: {} .".format(e))
 
     def get_all_teams(self):
         """
@@ -227,11 +227,33 @@ class CxRestAPI(object):
         headers = self.headers.update({"Content-Length": "0"})
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers, data=data)
 
-    def set_remote_source_setting_to_svn(self, id):
+    def set_remote_source_setting_to_svn(self, id, absolute_url, port, paths, username, password, private_key=None):
+        """
+        id:项目ID
+        absolute_url：svn仓库绝对url(eg:http://<server_ip>/svn/testrepo)
+        port:端口号
+        paths:svn仓库路径列表
+        username：svn凭据账号
+        password：svn凭据密码
+        """
         keyword = "set_remote_source_setting_to_svn"
         url_sub = {"pattern": "{id}",
                    "value": str(id)}
-        return self.send_requests(keyword=keyword, url_sub=url_sub)
+        data = {
+            "uri": {
+                "absoluteUrl": absolute_url,
+                "port": port
+            },
+            "paths": paths,
+            "credentials": {
+                "userName": username,
+                "password": password
+            }
+        }
+        if private_key:
+            data.update({"privateKey": private_key})
+        headers = {"Content-Type": "application/json;v=1.0"}
+        return self.send_requests(headers=headers, keyword=keyword, url_sub=url_sub, data=json.dumps(data))
 
     def set_remote_source_setting_to_tfs(self, id):
         keyword = "set_remote_source_setting_to_tfs"
