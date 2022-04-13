@@ -1,76 +1,29 @@
 # Checkmarx REST API SDK
-This is a Checkmarx REST API SDK implemented by Python 3.6.
+This is a Checkmarx REST API SDK implemented by Python 3.9+.
 
 ---
-## Getting Started
+ Getting Started
 ---
 If you want to know more about Checkmarx REST API,please check Checkmarx Knowledge Center：
 https://checkmarx.atlassian.net/wiki/spaces/KC/pages/33980523/REST+API
 ### Prerequisites
 * Python package requirements:
-> * requests==2.18.4
-> * requests-toolbelt==0.8.0
+> * requests==2.27.1
+> * requests-toolbelt==0.9.1
 
-## File structure of this project
-```
-.
-|-- etc
-|   |-- config.json
-|   |-- git_config.json.template
-|   |-- git_config_use_ssh.json.template
-|   |-- project_config.json.template
-|   `-- urls.json
-|
-|-- Include
-|   `-- ......
-|
-|-- Lib
-|   `-- ......
-|
-|-- Scripts
-|   |-- activate
-|   |-- activate.bat
-|   |-- activate.ps1
-|   |-- activate_this.py
-|   |-- chardetect.exe
-|   |-- deactivate.bat
-|   |-- easy_install-3.6.exe
-|   |-- easy_install.exe
-|   |-- pip.exe
-|   |-- pip3.6.exe
-|   |-- pip3.exe
-|   |-- python.exe
-|   |-- python3.dll
-|   |-- python36.dll
-|   |-- ythonw.exe
-|   `-- wheel.exe
-|
-|-- tcl
-|   `-- ......
-|
-|-- Create_a_scan_and_get_report.py
-|-- pip-selfcheck.json
-|-- README.md
-|-- requirements.txt
-|-- RestAPI.py
-|-- test.py
-`-- Unit_Test.py
-```
 
-## A demo process to ues RestAPI
+ A demo process to use RestAPI
 ---
 ### Windows
 ```
 Win + R  cmd
 > cd <The CxREST API Path>
-> Scripts/activate.bat
 > python Create_a_scan_and_get_report.py
 ```
 ### Linux / Unix
 ```b
 open a Terminal
 $ cd <the CxREST API Path>
-$ ./Scripts/activate
 $ python Create_a_scan_and_get_report.py
 ```
 
