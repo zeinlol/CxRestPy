@@ -1,4 +1,7 @@
 import time
+from datetime import datetime
+
+from etc.constants import SCAN_CHECK_SLEEP_TIME
 
 
 def wait_for_finishing_scan(checkmarx, scan_id):
@@ -8,8 +11,8 @@ def wait_for_finishing_scan(checkmarx, scan_id):
         if scan_status == "Finished":
             print()
             break
-        print("Re-Check after 10s ...")
-        time.sleep(10)
+        print(f"{datetime.now()} Re-Check after {SCAN_CHECK_SLEEP_TIME}s ...")
+        time.sleep(SCAN_CHECK_SLEEP_TIME)
 
 
 def get_scan_details(checkmarx, scan_id) -> dict:

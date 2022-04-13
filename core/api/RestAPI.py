@@ -9,7 +9,7 @@ import requests
 from requests_toolbelt import MultipartEncoder
 
 from core import cli_arguments
-from etc.constants import BASE_DIR
+from etc.constants import BASE_DIR, SCAN_CHECK_SLEEP_TIME
 
 
 class CxRestAPI(object):
@@ -688,7 +688,7 @@ class CxRestAPI(object):
             scan_status = self.get_sast_scan_details_by_scan_id(target_id=scan_id).json().get('status').get('name')
             if scan_status == 'Finished':
                 break
-            time.sleep(10)
+            time.sleep(SCAN_CHECK_SLEEP_TIME)
         report_type = config.get("reportType").upper()
         report = self.register_scan_report(report_type=report_type, scan_id=scan_id)
         report_id = report.json().get('reportId')
