@@ -1,7 +1,10 @@
 import os
 import time
+from pathlib import Path
 
-from core.reports.get_reports import get_report_data
+from core import cli_arguments
+from core.reports.get_reports import get_report_data, get_reports_results
+from etc.constants import REPORT_CHECK_SLEEP_TIME, BASE_DIR
 
 
 def create_report(checkmarx, report_type, scan_id):
@@ -17,8 +20,19 @@ def generate_new_report_file(checkmarx, report_type, scan_id, file_name: str):
         if report_status == "Created":
             print()
             break
-        print("Re-Check after 5s ...")
-        time.sleep(5)
-    reports = checkmarx.get_reports_by_id(report_id, report_type).content
+        print(f"Re-Check after {REPORT_CHECK_SLEEP_TIME}s ...")
+        time.sleep(REPORT_CHECK_SLEEP_TIME)
+    reports = get_reports_results(checkmarx, report_id, report_type)
+    report_path = Path(cli_arguments.output) or Path(BASE_DIR).joinpath(f'Report.{report_type}')
+    if report_path.is_dir():
+        file_name = f'Report.{report_type}'
+    else:
+        file_name = report_path.name
+        report_path = report_path.parents
+    write_to_file(path=report_path, file_name=file_name, data=reports)
+
+
+def write_to_file(path, file_name, data):
+    print(f"* Writing data to file: {path}/{file_name}")
     with open(os.path.expanduser(file_name), 'wb') as f:
-        f.write(reports)
+        f.write(data)

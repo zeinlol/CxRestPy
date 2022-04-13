@@ -20,8 +20,9 @@ def create_parser():
                         help='Team that used for projects. Default is /CxServer')
     parser.add_argument('-s', '--scan-folder', type=str, default=Path(__file__).parents[1],
                         help=f'Scan folder for analyzing. Default is this {Path(__file__).parents[1]}')
-    parser.add_argument('-o', '--output', type=str, default=None,
-                        help='Output file for data')
+    parser.add_argument('-o', '--output', type=str, default=Path(__file__).parents[1],
+                        help=f"Output file for data {Path(__file__).parents[1]}/Report.[FORMAT]"
+                             f"\n[FORMAT] is one of {constants.REPORT_TYPES}")
     parser.add_argument('-f', '--format', type=str, default=None,
                         help=f'Output format. Supported values: {constants.REPORT_TYPES}')
     parser.add_argument('-d', '--delete', default=False, action='store_true',

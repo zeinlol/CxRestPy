@@ -7,11 +7,11 @@ from etc.constants import SCAN_CHECK_SLEEP_TIME
 def wait_for_finishing_scan(checkmarx, scan_id):
     while True:
         scan_status = get_scan_details(checkmarx=checkmarx, scan_id=scan_id).get("status").get("name")
-        print("\tScan status：[", scan_status, "]", end=" ")
+        print(f"\t[{datetime.now()}] Scan status：[", scan_status, "]", end=" ")
         if scan_status == "Finished":
             print()
             break
-        print(f"{datetime.now()} Re-Check after {SCAN_CHECK_SLEEP_TIME}s ...")
+        print(f"Re-Check after {SCAN_CHECK_SLEEP_TIME}s ...")
         time.sleep(SCAN_CHECK_SLEEP_TIME)
 
 

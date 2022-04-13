@@ -1,6 +1,7 @@
 from core import cli_arguments
 from core.api import RestAPI
 from core.projects import choose_project, create_project, generate_new_temp_project
+from core.projects.delete_projects import delete_all_projects, delete_project
 from core.reports import generate_new_report_file
 from core.scans import create_scan, wait_for_finishing_scan
 from core.utils.output_format import get_format
@@ -10,6 +11,9 @@ checkmarx = RestAPI.CxRestAPI()
 
 def main():
     print("* Welcome to Checkmarx Rest api! *")
+
+    if cli_arguments.delete_previous:
+        delete_all_projects(checkmarx=checkmarx)
 
     if cli_arguments.auto:  # check if existed or create new project
         project = generate_new_temp_project(checkmarx=checkmarx)
@@ -22,7 +26,7 @@ def main():
     project_name = project.get("name")
     target_path = cli_arguments.scan_folder or input("- Set target path:")
     print(f"* Target path: {target_path}")
-    if target_path.name[:-3] == 'zip':
+    if target_path[:-3] == 'zip':
         checkmarx.upload_source_code_zip_file(target_id=project_id, zip_path=target_path)
     else:
         checkmarx.upload_source_code_folder(target_id=project_id, target_path=target_path)
@@ -30,11 +34,14 @@ def main():
     scan = create_scan(checkmarx=checkmarx, project_id=project_id)
     scan_id = scan.get("id")
     wait_for_finishing_scan(checkmarx=checkmarx, scan_id=scan_id)
-
+    print('* Scan finished successfully')
     report_type = cli_arguments.format or get_format()
     print("* Creating report...")
     report_name = f'{project_name}.{report_type}'
     generate_new_report_file(checkmarx=checkmarx, report_type=report_type, scan_id=scan_id, file_name=report_name)
+
+    if cli_arguments.delete:
+        delete_project(checkmarx=checkmarx, project=project)
     print("* Successful! Thanks for usage. *")
 
 
