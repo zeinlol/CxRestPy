@@ -7,7 +7,9 @@ def create_project(checkmarx, project_name, team=None) -> dict:
     team = team or choose_team(checkmarx=checkmarx)
     print(f"* Create new project:\n\tname: {project_name}\n\tteam: {team['fullName']}")
     team_id = team.get("id")
-    return checkmarx.create_project_with_default_configuration(name=project_name, owning_team=team_id).json()
+    project = checkmarx.create_project_with_default_configuration(name=project_name, owning_team=team_id).json()
+    project['name'] = project_name
+    return project
 
 
 def generate_new_temp_project(checkmarx) -> dict:
