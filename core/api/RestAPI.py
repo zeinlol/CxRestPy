@@ -8,6 +8,8 @@ import time
 import requests
 from requests_toolbelt import MultipartEncoder
 
+from core import cli_arguments
+
 
 class CxRestAPI(object):
 
@@ -27,9 +29,9 @@ class CxRestAPI(object):
         try:
             with open("../../etc/config.json") as config:
                 conf = json.loads(config.read())
-            server = conf.get("server")
-            username = conf.get("username")
-            password = conf.get("password")
+            server = cli_arguments.url or conf.get("server")
+            username = cli_arguments.login or conf.get("username")
+            password = cli_arguments.password or conf.get("password")
             return server, username, password
         except Exception as e:
             raise Exception(f"Unable to get configuration: {e} . ") from e

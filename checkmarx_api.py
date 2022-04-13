@@ -1,7 +1,9 @@
+from core import cli_arguments
 from core.api import RestAPI
 from core.projects import choose_project, create_project
 from core.reports import generate_new_report_file
 from core.scans import create_scan, wait_for_finishing_scan
+from core.utils.output_format import get_format
 from etc.constants import REPORT_TYPES
 
 checkmarx = RestAPI.CxRestAPI()
@@ -18,7 +20,7 @@ def main():
     else:
         project_id, project_name = choose_project(checkmarx)
 
-    target_path = input("- Set target path:")
+    target_path = cli_arguments.scan_folder or input("- Set target path:")
     if target_path[:-3] == 'zip':
         checkmarx.upload_source_code_zip_file(target_id=project_id, zip_path=target_path)
     else:
@@ -28,16 +30,11 @@ def main():
     scan_id = scan.get("id")
     wait_for_finishing_scan(checkmarx=checkmarx, scan_id=scan_id)
 
-    report_code = 0
-    for types in REPORT_TYPES:
-        print("\t[{}]".format(report_code), types)
-        report_code += 1
-    report_code = int(input("- Choose report type:"))
-    report_type = REPORT_TYPES[report_code].lower()
+    report_type = cli_arguments.format or get_format()
     print("* Creating report...")
     report_name = f'{project_name}.{report_type}'
     generate_new_report_file(checkmarx=checkmarx, report_type=report_type, scan_id=scan_id, file_name=report_name)
-    print("* Successful! Thanks for use. *")
+    print("* Successful! Thanks for usage. *")
 
 
 if __name__ == '__main__':
