@@ -4,7 +4,6 @@ from core.projects import choose_project, create_project
 from core.reports import generate_new_report_file
 from core.scans import create_scan, wait_for_finishing_scan
 from core.utils.output_format import get_format
-from etc.constants import REPORT_TYPES
 
 checkmarx = RestAPI.CxRestAPI()
 

@@ -1,1 +1,1 @@
-from arguments import cli_arguments
+from .arguments import cli_arguments

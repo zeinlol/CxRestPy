@@ -1,7 +1,7 @@
 import os
 import time
 
-from core.reports import get_report_data
+from core.reports.get_reports import get_report_data
 
 
 def create_report(checkmarx, report_type, scan_id):

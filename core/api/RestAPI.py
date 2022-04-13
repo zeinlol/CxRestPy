@@ -9,6 +9,7 @@ import requests
 from requests_toolbelt import MultipartEncoder
 
 from core import cli_arguments
+from etc.constants import BASE_DIR
 
 
 class CxRestAPI(object):
@@ -27,7 +28,7 @@ class CxRestAPI(object):
         :return: List
         """
         try:
-            with open("../../etc/config.json") as config:
+            with open(f"{BASE_DIR}/etc/config.json") as config:
                 conf = json.loads(config.read())
             server = cli_arguments.url or conf.get("server")
             username = cli_arguments.login or conf.get("username")
@@ -43,7 +44,7 @@ class CxRestAPI(object):
         :return: Dict
         """
         try:
-            with open("../../etc/urls.json") as urls:
+            with open(f"{BASE_DIR}/etc/urls.json") as urls:
                 return json.loads(urls.read())
         except Exception as e:
             raise Exception(f"Unable to get configuration: {e} . ") from e
