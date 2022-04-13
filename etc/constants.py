@@ -1,0 +1,1 @@
+REPORT_TYPES = ["PDF", "RTF", "CSV", "XML"]

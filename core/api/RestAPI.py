@@ -1,9 +1,11 @@
+import json
 import os
+import pathlib
 import re
+import shutil
 import time
 
 import requests
-import json
 from requests_toolbelt import MultipartEncoder
 
 
@@ -16,13 +18,14 @@ class CxRestAPI(object):
         self.headers = self.token.copy()
         self.headers.update({"cxOrigin": "CxRestAPI"})
 
-    def get_config(self):
+    @staticmethod
+    def get_config():
         """
         获取配置文件，配置文件在‘etc/config’，请修改相关信息以便脚本可以连接到您的 Checkmarx 服务器。
         :return: List
         """
         try:
-            with open("etc/config.json") as config:
+            with open("../../etc/config.json") as config:
                 conf = json.loads(config.read())
             server = conf.get("server")
             username = conf.get("username")
@@ -31,20 +34,20 @@ class CxRestAPI(object):
         except Exception as e:
             raise Exception(f"Unable to get configuration: {e} . ") from e
 
-    def get_urls(self):
+    @staticmethod
+    def get_urls():
         """
         读取urls.json，请不要随意修改其中的数据。
         :return: Dict
         """
         try:
-            with open("etc/urls.json") as urls:
+            with open("../../etc/urls.json") as urls:
                 return json.loads(urls.read())
         except Exception as e:
             raise Exception(f"Unable to get configuration: {e} . ") from e
 
     def send_requests(self, keyword, url_sub=None, headers=None, data=None):
         """
-
         :param keyword: str     定义从urls中拿哪一个值
         :param url_sub: str     定义urls中形参的值（可选）
         :param headers: dict    定义header（可选）
@@ -56,16 +59,16 @@ class CxRestAPI(object):
         try:
             url_parameters = self.urls.get(keyword, None)
             if not url_parameters:
-                raise Exception("Keyword not in urls.json")
+                raise KeyError("Keyword not in urls.json")
             url = self.server + re.sub(url_sub.get("pattern"),
                                        url_sub.get("value"),
                                        url_parameters.get("url_suffix"))
-            s = requests.Session()
+            requests.Session()
             headers = headers or self.headers
 
             resp = requests.request(method=url_parameters.get("http_method"), headers=self.headers, url=url, data=data)
             if resp.status_code == 200:
-                if headers.get("Accept") == "application/json;v=1.0"\
+                if headers.get("Accept") == "application/json;v=1.0" \
                         or headers.get("Accept") != "application/json;v=1.0":
                     return resp
             elif resp.status_code in [201, 202]:
@@ -73,11 +76,11 @@ class CxRestAPI(object):
             elif resp.status_code == 204:
                 return resp
             elif resp.status_code == 400:
-                raise Exception(f" 400 Bad Request: {resp.text}.")
+                raise requests.exceptions.HTTPError(f" 400 Bad Request: {resp.text}.")
             elif resp.status_code == 404:
-                raise Exception(f" 404 Not found {resp.text}.")
+                raise requests.exceptions.HTTPError(f" 404 Not found {resp.text}.")
             else:
-                raise Exception(f" Failed: {resp.text}.")
+                raise requests.exceptions.BaseHTTPError(f" Failed: {resp.text}.")
 
         except Exception as e:
             raise Exception(e)
@@ -226,7 +229,7 @@ class CxRestAPI(object):
                                          username, password, private_key=None):
         """
         id:项目ID
-        absolute_url：svn仓库绝对url(eg:http://<server_ip>/svn/testrepo)
+        absolute_url：svn仓库绝对url(eg:https://<server_ip>/svn/testrepo)
         port:端口号
         paths:svn仓库路径列表
         username：svn凭据账号
@@ -313,6 +316,15 @@ class CxRestAPI(object):
                                                           "application/zip")})
         headers = self.headers.copy()
         headers.update({"Content-Type": files.content_type})
+        self.upload_sources(keyword=keyword, url_sub=url_sub, headers=headers, files=files)
+
+    def upload_source_code_folder(self, target_id, target_path: str):
+        target_path = pathlib.Path(target_path)
+        file_name = target_path.name
+        archive = shutil.make_archive(file_name, 'zip', target_path)
+        self.upload_source_code_zip_file(target_id=target_id, zip_path=archive)
+
+    def upload_sources(self, keyword: str, url_sub: dict, headers: dict, files: MultipartEncoder):
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers, data=files)
 
     def set_remote_source_setting_to_git_using_ssh(self, target_id,
@@ -341,22 +353,22 @@ class CxRestAPI(object):
         keyword = "get_all_engine_server_details"
         return self.send_requests(keyword=keyword)
 
-    def register_engine(self, name, uri, min_loc, maxLoc, isBlocked=False):
+    def register_engine(self, name, uri, min_loc, max_loc, is_blocked=False):
         """
 
         :param name: str
         :param uri: str
         :param min_loc: int
-        :param maxLoc: int
-        :param isBlocked: boolean
+        :param max_loc: int
+        :param is_blocked: boolean
         :return: dict
         """
         keyword = "register_engine"
         data = {"name": name,
                 "uri": uri,
                 "minLoc": min_loc,
-                "maxLoc": maxLoc,
-                "isBlocked": isBlocked}
+                "maxLoc": max_loc,
+                "isBlocked": is_blocked}
         return self.send_requests(keyword=keyword, data=data)
 
     def unregister_engine_by_engine_id(self, target_id):
@@ -371,15 +383,15 @@ class CxRestAPI(object):
                    "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def update_engine_server(self, target_id, name, uri, min_loc, maxLoc, isBlocked=False):
+    def update_engine_server(self, target_id, name, uri, min_loc, max_loc, is_blocked=False):
         keyword = "update_engine_server"
         url_sub = {"pattern": "{id}",
                    "value": str(target_id)}
         data = {"name": name,
                 "uri": uri,
                 "minLoc": min_loc,
-                "maxLoc": maxLoc,
-                "isBlocked": isBlocked}
+                "maxLoc": max_loc,
+                "isBlocked": is_blocked}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
     def get_all_scan_details_in_queue(self):
@@ -493,7 +505,7 @@ class CxRestAPI(object):
                 "itemsPerPage": items_per_page}
         return self.send_requests(keyword=keyword, data=data)
 
-# Checkmarx v8.7.0 add
+    # Checkmarx v8.7.0 add
     def get_all_custom_tasks(self):
         keyword = "get_all_custom_tasks"
         return self.send_requests(keyword=keyword).json()
@@ -601,7 +613,7 @@ class CxRestAPI(object):
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
     def set_issue_tracking_system_as_jira_by_id(self, target_id, system_id, jira_project_id,
-                                                issue_type_id, fields, field_id, values):
+                                                issue_type_id, field_id, values):
         keyword = "set_issue_tracking_system_as_jira_by_id"
         url_sub = {"pattern": "{id}",
                    "values": str(target_id)}
