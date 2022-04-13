@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="18079fe8-e867-4be6-9943-4375fe739eca" name="Default" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
+    <list default="true" id="18079fe8-e867-4be6-9943-4375fe739eca" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/CxREST_API.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CxREST_API.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1e61ded4-7e00-45ae-a412-6ec57d7f9268.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1e61ded4-7e00-45ae-a412-6ec57d7f9268.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -123,69 +128,6 @@
     </expand>
     <select />
   </component>
-  <component name="FavoritesManager">
-    <favorites_list name="CxREST_API" />
-  </component>
-  <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.51230013">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="RestAPI.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/RestAPI.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="162">
-                  <caret line="9" column="14" lean-forward="true" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-                  <folding>
-                    <element signature="e#0#9#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="git_config.json.template" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/etc/git_config.json.template">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="18">
-                  <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="git_config_use_ssh.json.template" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/etc/git_config_use_ssh.json.template">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="54">
-                  <caret line="3" column="23" selection-start-line="3" selection-start-column="23" selection-end-line="3" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="project_config.json.template" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/etc/project_config.json.template">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="144">
-                  <caret line="8" column="24" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="RestAPI.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/RestAPI.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="72">
-                  <caret line="4" column="9" lean-forward="true" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -271,6 +213,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
@@ -279,6 +224,7 @@
     <option name="width" value="974" />
     <option name="height" value="1055" />
   </component>
+  <component name="ProjectId" id="27jrbV4jTGXlSFFbKuqlsGQpgAq" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -304,16 +250,21 @@
       <pane id="Scope" />
     </panes>
   </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="SQL Server (Microsoft)" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Documents/WeChat Files/cc592yk/Files/checkmarx-restapi" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../WeChat Files/cc592yk/Files/checkmarx-restapi" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.tslint" value="" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -324,18 +275,6 @@
       <recent name="D:\MyCode\CxREST_API\etc" />
       <recent name="D:\MyCode\CxREST_API" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Python.Create_a_scan_and_get_report">
     <configuration name="Create_a_scan_and_get_report" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -356,6 +295,9 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="test (1)" type="PythonConfigurationType" factoryName="Python">
       <module name="CxREST_API" />
@@ -375,6 +317,9 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="Unittests for Unit_Test.APITest.test_get_all_teams" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="CxREST_API" />
@@ -389,6 +334,7 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;Unit_Test.APITest.test_get_all_teams&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
     </configuration>
     <configuration name="Unittests for Unit_Test.APITest.test_get_project_details_by_id" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="CxREST_API" />
@@ -403,6 +349,7 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;Unit_Test.APITest.test_get_project_details_by_id&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
     </configuration>
     <configuration name="Unittests for Unit_Test.APITest.test_scans_and_reports" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="CxREST_API" />
@@ -417,6 +364,7 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;Unit_Test.APITest.test_scans_and_reports&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
     </configuration>
     <configuration name="Unittests in Unit_Test.py" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="CxREST_API" />
@@ -431,14 +379,15 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/Unit_Test.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Python.test (1)" />
+      <item itemvalue="Python.Create_a_scan_and_get_report" />
       <item itemvalue="Python tests.Unittests in Unit_Test.py" />
       <item itemvalue="Python tests.Unittests for Unit_Test.APITest.test_get_all_teams" />
       <item itemvalue="Python tests.Unittests for Unit_Test.APITest.test_get_project_details_by_id" />
       <item itemvalue="Python tests.Unittests for Unit_Test.APITest.test_scans_and_reports" />
-      <item itemvalue="Python.Create_a_scan_and_get_report" />
     </list>
     <recent_temporary>
       <list>
@@ -450,6 +399,7 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -460,6 +410,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1523436593685</updated>
+      <workItem from="1649844423987" duration="40000" />
+      <workItem from="1649844496022" duration="295000" />
     </task>
     <servers />
   </component>
@@ -547,18 +499,21 @@
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="3" />
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.template" />
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="25" />
-    </breakpoint-manager>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="editorHistoryManager">
     <entry file="das://1e61ded4-7e00-45ae-a412-6ec57d7f9268/database/master/schema/dbo/table/MSreplication_options">

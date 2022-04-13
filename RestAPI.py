@@ -15,7 +15,6 @@ class CxRestAPI(object):
         self.token = self.get_token()
         self.headers = self.token.copy()
         self.headers.update({"cxOrigin": "CxRestAPI"})
-        pass
 
     def get_config(self):
         """
@@ -30,7 +29,7 @@ class CxRestAPI(object):
             password = conf.get("password")
             return server, username, password
         except Exception as e:
-            raise Exception("Unable to get configuration: {} . ".format(e))
+            raise Exception(f"Unable to get configuration: {e} . ") from e
 
     def get_urls(self):
         """
@@ -41,7 +40,7 @@ class CxRestAPI(object):
             with open("etc/urls.json") as urls:
                 return json.loads(urls.read())
         except Exception as e:
-            raise Exception("Unable to get configuration: {} . ".format(e))
+            raise Exception(f"Unable to get configuration: {e} . ") from e
 
     def send_requests(self, keyword, url_sub=None, headers=None, data=None):
         """
@@ -66,23 +65,22 @@ class CxRestAPI(object):
 
             resp = requests.request(method=url_parameters.get("http_method"), headers=self.headers, url=url, data=data)
             if resp.status_code == 200:
-                if headers.get("Accept") == "application/json;v=1.0":
-                    return resp
-                else:
+                if headers.get("Accept") == "application/json;v=1.0"\
+                        or headers.get("Accept") != "application/json;v=1.0":
                     return resp
             elif resp.status_code in [201, 202]:
                 return resp
             elif resp.status_code == 204:
                 return resp
             elif resp.status_code == 400:
-                raise Exception(" 400 Bad Request: {}.".format(resp.text))
+                raise Exception(f" 400 Bad Request: {resp.text}.")
             elif resp.status_code == 404:
-                raise Exception(" 404 Not found {}.".format(resp.text))
+                raise Exception(f" 404 Not found {resp.text}.")
             else:
-                raise Exception(" Failed: {}.".format(resp.text))
+                raise Exception(f" Failed: {resp.text}.")
 
         except Exception as e:
-            raise Exception("{}".format(e))
+            raise Exception(e)
 
     def get_token(self):
         """
@@ -102,7 +100,7 @@ class CxRestAPI(object):
                 "client_secret": '014DF517-39D1-4453-B7B3-9930C563627C'}
         url = self.server + self.urls.get("token").get("url_suffix")
         token = requests.post(url=url, data=data).json()
-        return {'Authorization': '{} {}'.format(token['token_type'], token['access_token'])}
+        return {'Authorization': f"{token['token_type']} {token['access_token']}"}
 
     # # 已弃用
     # def login(self):
@@ -161,15 +159,15 @@ class CxRestAPI(object):
         keyword = "get_all_teams"
         return self.send_requests(keyword=keyword)
 
-    def get_project_details_by_id(self, project_id):
+    def get_project_details_by_id(self, target_id):
         """
         获取所有Project的详细信息。
-        :param project_id:str
+        :param target_id:str
         :return:dict
         """
         keyword = "get_project_details_by_id"
-        url_sub = {"pattern": "{project_id}",
-                   "value": project_id}
+        url_sub = {"pattern": "{id}",
+                   "value": target_id}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
     def get_reports_by_id(self, report_id, report_type):
@@ -183,7 +181,7 @@ class CxRestAPI(object):
         url_sub = {"pattern": "{report_id}",
                    "value": str(report_id)}
         headers = self.headers.copy()
-        headers.update({"Accept": "application/"+report_type})
+        headers.update({"Accept": f"application/{report_type}"})
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers)
 
     def get_report_status_by_id(self, report_id):
@@ -197,19 +195,19 @@ class CxRestAPI(object):
                    "value": str(report_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def set_remote_source_setting_to_git(self, project_id, config_path=None,
+    def set_remote_source_setting_to_git(self, target_id, config_path=None,
                                          git_url=None, branch=None):
         """
         通过 project id 设置 Git
-        :param project_id: str
+        :param target_id: str
         :param config_path: str
         :param git_url: str
         :param branch: str
         :return: dict
         """
         keyword = "set_remote_source_setting_to_git"
-        url_sub = {"pattern": "{project_id}",
-                   "value": str(project_id)}
+        url_sub = {"pattern": "{id}",
+                   "value": str(target_id)}
         if config_path is not None:
             try:
                 with open(config_path) as f:
@@ -218,13 +216,14 @@ class CxRestAPI(object):
                 branch = config.get("branch")
             except Exception as e:
                 raise e
-        data = {"id": project_id,
+        data = {"id": target_id,
                 "Url": git_url,
                 "Branch": branch}
         headers = self.headers.update({"Content-Length": "0"})
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers, data=data)
 
-    def set_remote_source_setting_to_svn(self, id, absolute_url, port, paths, username, password, private_key=None):
+    def set_remote_source_setting_to_svn(self, target_id, absolute_url, port, paths,
+                                         username, password, private_key=None):
         """
         id:项目ID
         absolute_url：svn仓库绝对url(eg:http://<server_ip>/svn/testrepo)
@@ -235,7 +234,7 @@ class CxRestAPI(object):
         """
         keyword = "set_remote_source_setting_to_svn"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         data = {
             "uri": {
                 "absoluteUrl": absolute_url,
@@ -248,26 +247,26 @@ class CxRestAPI(object):
             }
         }
         if private_key:
-            data.update({"privateKey": private_key})
+            data["privateKey"] = private_key
         headers = {"Content-Type": "application/json;v=1.0"}
         return self.send_requests(headers=headers, keyword=keyword, url_sub=url_sub, data=json.dumps(data))
 
-    def set_remote_source_setting_to_tfs(self, id):
+    def set_remote_source_setting_to_tfs(self, target_id):
         keyword = "set_remote_source_setting_to_tfs"
         url_sub = {"pattern": "{id}",
-                   "value": id}
+                   "value": target_id}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def set_remote_source_setting_to_shared(self, id):
+    def set_remote_source_setting_to_shared(self, target_id):
         keyword = "set_remote_source_setting_to_shared"
         url_sub = {"pattern": "{id}",
-                   "value": id}
+                   "value": target_id}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def set_remote_source_setting_to_perforce(self, id):
+    def set_remote_source_setting_to_perforce(self, target_id):
         keyword = "set_remote_source_setting_to_perforce"
         url_sub = {"pattern": "{id}",
-                   "value": id}
+                   "value": target_id}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
     def get_all_project_details(self):
@@ -304,10 +303,10 @@ class CxRestAPI(object):
                 "scanId": scan_id}
         return self.send_requests(keyword=keyword, data=data)
 
-    def upload_source_code_zip_file(self, project_id, zip_path):
+    def upload_source_code_zip_file(self, target_id, zip_path):
         keyword = "upload_source_code_zip_file"
-        url_sub = {"pattern": "{project_id}",
-                   "value": str(project_id)}
+        url_sub = {"pattern": "{id}",
+                   "value": str(target_id)}
         file_name = zip_path.split()[-1]
         files = MultipartEncoder(fields={"zippedSource": (file_name,
                                                           open(zip_path, 'rb'),
@@ -316,12 +315,12 @@ class CxRestAPI(object):
         headers.update({"Content-Type": files.content_type})
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers, data=files)
 
-    def set_remote_source_setting_to_git_using_ssh(self, project_id,
+    def set_remote_source_setting_to_git_using_ssh(self, target_id,
                                                    config_path=None, git_url=None,
                                                    branch=None, private_key=None):
         keyword = "set_remote_source_setting_to_git"
-        url_sub = {"pattern": "{project_id}",
-                   "value": str(project_id)}
+        url_sub = {"pattern": "{id}",
+                   "value": str(target_id)}
         if config_path is not None:
             try:
                 with open(config_path, 'r') as f:
@@ -332,7 +331,7 @@ class CxRestAPI(object):
             except Exception as e:
                 raise e
         id_rsa = open(private_key, 'rb').read()
-        data = {"id": project_id,
+        data = {"id": target_id,
                 "url": git_url,
                 "branch": branch,
                 "privatekey": id_rsa}
@@ -342,12 +341,12 @@ class CxRestAPI(object):
         keyword = "get_all_engine_server_details"
         return self.send_requests(keyword=keyword)
 
-    def register_engine(self, name, uri, minLoc, maxLoc, isBlocked=False):
+    def register_engine(self, name, uri, min_loc, maxLoc, isBlocked=False):
         """
 
         :param name: str
         :param uri: str
-        :param minLoc: int
+        :param min_loc: int
         :param maxLoc: int
         :param isBlocked: boolean
         :return: dict
@@ -355,30 +354,30 @@ class CxRestAPI(object):
         keyword = "register_engine"
         data = {"name": name,
                 "uri": uri,
-                "minLoc": minLoc,
+                "minLoc": min_loc,
                 "maxLoc": maxLoc,
                 "isBlocked": isBlocked}
         return self.send_requests(keyword=keyword, data=data)
 
-    def unregister_engine_by_engine_id(self, id):
+    def unregister_engine_by_engine_id(self, target_id):
         keyword = "unregister_engine_by_engine_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def get_engine_details(self, id):
+    def get_engine_details(self, target_id):
         keyword = "get_engine_details"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def update_engine_server(self, id, name, uri, minLoc, maxLoc, isBlocked=False):
+    def update_engine_server(self, target_id, name, uri, min_loc, maxLoc, isBlocked=False):
         keyword = "update_engine_server"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         data = {"name": name,
                 "uri": uri,
-                "minLoc": minLoc,
+                "minLoc": min_loc,
                 "maxLoc": maxLoc,
                 "isBlocked": isBlocked}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
@@ -391,10 +390,10 @@ class CxRestAPI(object):
         keyword = "get_all_preset_details"
         return self.send_requests(keyword=keyword)
 
-    def get_sast_scan_details_by_scan_id(self, id):
+    def get_sast_scan_details_by_scan_id(self, target_id):
         keyword = "get_sast_scan_details_by_scan_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
     def get_preset_details_by_preset_id(self, preset_id):
@@ -407,45 +406,45 @@ class CxRestAPI(object):
         keyword = "get_all_engine_configurations"
         return self.send_requests(keyword=keyword)
 
-    def get_scan_settings_by_project_id(self, project_id):
+    def get_scan_settings_by_project_id(self, target_id):
         keyword = "get_scan_settings_by_project_id"
-        url_sub = {"pattern": "{project_id}",
-                   "value": str(project_id)}
+        url_sub = {"pattern": "{id}",
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def get_engine_configuration_by_id(self, id):
+    def get_engine_configuration_by_id(self, target_id):
         keyword = "get_engine_configuration_by_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def define_sast_scan_settings(self, project_id, preset_id, engine_configuration_id):
+    def define_sast_scan_settings(self, target_id, preset_id, engine_configuration_id):
         keyword = "define_sast_scan_settings"
-        data = {"projectId": project_id,
+        data = {"projectId": target_id,
                 "presetId": preset_id,
                 "engineConfigurationId": engine_configuration_id}
         return self.send_requests(keyword=keyword, data=data)
 
-    def create_new_scan(self, project_id, is_incremental=False, is_public=True, force_scan=True):
+    def create_new_scan(self, target_id, is_incremental=False, is_public=True, force_scan=True):
         keyword = "create_new_scan"
-        data = {"projectId": project_id,
+        data = {"projectId": target_id,
                 "isIncremental": is_incremental,
                 "isPublic": is_public,
                 "forceScan": force_scan}
         return self.send_requests(keyword=keyword, data=data)
 
-    def get_all_osa_scan_details_for_project(self, project_id, page=1, items_per_page=100):
-        ## version
+    def get_all_osa_scan_details_for_project(self, target_id, page=1, items_per_page=100):
+        # version
         keyword = "get_all_osa_scan_details_for_project"
-        data = {"projectId": str(project_id),
+        data = {"projectId": str(target_id),
                 "page": int(page),
                 "itemsPerPage": int(items_per_page)}
         return self.send_requests(keyword=keyword, data=data, headers=None)
 
-    def create_an_osa_scan_request(self, project_id, zip_path):
+    def create_an_osa_scan_request(self, target_id, zip_path):
         keyword = "create_an_osa_scan_request"
         file_name = zip_path.split()[-1]
-        files = MultipartEncoder(fields={"projectId": str(project_id),
+        files = MultipartEncoder(fields={"projectId": str(target_id),
                                          "zippedSource": (file_name,
                                                           open(zip_path, 'rb'),
                                                           "application/zip")})
@@ -499,115 +498,113 @@ class CxRestAPI(object):
         keyword = "get_all_custom_tasks"
         return self.send_requests(keyword=keyword).json()
 
-    def delete_project_by_id(self, id):
+    def delete_project_by_id(self, target_id):
         keyword = "delete_project_by_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
-        data = {"id": int(id),
+                   "value": str(target_id)}
+        data = {"id": int(target_id),
                 "deleteRunningScans": True}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def update_project_name_or_team_id(self, id, name=None, owning_team=None):
-        ## version
-        keyworld = "update_project_name_or_team_id"
+    def update_project_name_or_team_id(self, target_id, name=None, owning_team=None):
+        # version
+        key_word = "update_project_name_or_team_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         if owning_team is None:
-            data = {"id": id,
+            data = {"id": target_id,
                     "name": name}
-        elif owning_team is None:
-            data = {"id": id,
-                    "owningTeam": owning_team}
         else:
-            data = {"id": id,
+            data = {"id": target_id,
                     "name": name,
                     "owningTeam": owning_team}
-        return self.send_requests(keyword=keyworld, url_sub=url_sub, data=data)
+        return self.send_requests(keyword=key_word, url_sub=url_sub, data=data)
 
-    def get_custom_task_by_id(self, id):
+    def get_custom_task_by_id(self, target_id):
         keyword = "get_custom_task_by_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
     def get_all_issue_tracking_systems(self):
         keyword = "get_all_issue_tracking_systems"
         return self.send_requests(keyword=keyword).json()
 
-    def get_issue_tracking_system_details_by_id(self, id):
+    def get_issue_tracking_system_details_by_id(self, target_id):
         keyword = "get_issue_tracking_system_details_by_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def get_project_exclude_settings_by_project_id(self, id):
+    def get_project_exclude_settings_by_project_id(self, target_id):
         keyword = "get_project_exclude_settings_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def set_project_exclude_settings_by_project_id(self, id, settings, folders=None, files=None):
+    def set_project_exclude_settings_by_project_id(self, target_id, settings, folders=None, files=None):
         keyword = "set_project_exclude_settings_by_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         if settings == 'folders':
-            data = {"id": str(id),
+            data = {"id": str(target_id),
                     "excludeSettings": settings,
                     "excludeFoldersPattern": folders}
         else:
-            data = {"id": str(id),
+            data = {"id": str(target_id),
                     "excludeSettings": settings,
                     "excludeFilesPattern": files}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def get_remote_source_settings_for_git_by_project_id(self, id):
+    def get_remote_source_settings_for_git_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_git_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def get_remote_source_settings_for_svn_by_project_id(self, id):
+    def get_remote_source_settings_for_svn_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_svn_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def get_remote_source_settings_for_tfs_by_project_id(self, id):
+    def get_remote_source_settings_for_tfs_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_tfs_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def get_remote_source_settings_for_custom_by_project_id(self, id):
+    def get_remote_source_settings_for_custom_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_custom_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def get_remote_source_settings_for_shared_by_project_id(self, id):
+    def get_remote_source_settings_for_shared_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_shared_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub).json()
 
-    def get_remote_source_settings_for_perforce_by_project_id(self, id):
+    def get_remote_source_settings_for_perforce_by_project_id(self, target_id):
         keyword = "get_remote_source_settings_for_perforce_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def set_data_retention_settings_by_project_id(self, id, scans_to_keep):
+    def set_data_retention_settings_by_project_id(self, target_id, scans_to_keep):
         keyword = "set_data_retention_settings_by_project_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
-        data = {"id": int(id),
+                   "value": str(target_id)}
+        data = {"id": int(target_id),
                 "scansToKeep": scans_to_keep}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def set_issue_tracking_system_as_jira_by_id(self, project_id, system_id, jira_project_id, issue_type_id, fields, field_id, values):
+    def set_issue_tracking_system_as_jira_by_id(self, target_id, system_id, jira_project_id,
+                                                issue_type_id, fields, field_id, values):
         keyword = "set_issue_tracking_system_as_jira_by_id"
         url_sub = {"pattern": "{id}",
-                   "values": str(project_id)}
+                   "values": str(target_id)}
         data = {"issueTrackingSystemId": int(system_id),
                 "jiraProjectId": str(jira_project_id),
                 "jiraSettings": {"issueTrackingSystemId": int(system_id),
@@ -617,31 +614,31 @@ class CxRestAPI(object):
                                          "values": values}}}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def get_scan_queue_details_by_scan_id(self, id):
+    def get_scan_queue_details_by_scan_id(self, target_id):
         keyword = "get_scan_queue_details_by_scan_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
+                   "value": str(target_id)}
         return self.send_requests(keyword=keyword, url_sub=url_sub)
 
-    def update_queued_scan_status_by_scan_id(self, id, status="Cancelled"):
+    def update_queued_scan_status_by_scan_id(self, target_id, status="Cancelled"):
         keyword = "update_queued_scan_status_by_scan_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
-        data = {"Id": int(id),
+                   "value": str(target_id)}
+        data = {"Id": int(target_id),
                 "status": str(status)}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def add_or_update_a_comment_by_scan_id(self, id, content):
+    def add_or_update_a_comment_by_scan_id(self, target_id, content):
         keyword = "add_or_update_a_comment_by_scan_id"
         url_sub = {"pattern": "{id}",
-                   "value": str(id)}
-        data = {"Id": int(id),
+                   "value": str(target_id)}
+        data = {"Id": int(target_id),
                 "updatedScanDto": {"Comment": content}}
         return self.send_requests(keyword=keyword, url_sub=url_sub, data=data)
 
-    def update_sast_scan_settings(self, project_id, preset_id, engine_configuration_id):
+    def update_sast_scan_settings(self, target_id, preset_id, engine_configuration_id):
         keyword = "update_sast_scan_settings"
-        data = {"projectId": int(project_id),
+        data = {"projectId": int(target_id),
                 "presetId": int(preset_id),
                 "engineConfigurationId": engine_configuration_id}
         return self.send_requests(keyword=keyword, data=data)
@@ -660,17 +657,17 @@ class CxRestAPI(object):
                                                                  is_public=config.get('isPublic'))
         project_id = project.json().get("id")
         if config.get('projectSetting') == 'local':
-            self.upload_source_code_zip_file(project_id=project_id, zip_path=config.get('zipPath'))
+            self.upload_source_code_zip_file(target_id=project_id, zip_path=config.get('zipPath'))
         elif config.get('projectSetting') == 'git':
-            self.set_remote_source_setting_to_git(project_id=project_id, config_path='etc/git_config')
+            self.set_remote_source_setting_to_git(target_id=project_id, config_path='etc/git_config')
         preset_id = config.get('presetId')
         engine_configuration_id = config.get('engineConfigurationId')
-        self.define_sast_scan_settings(project_id=project_id, preset_id=preset_id,
+        self.define_sast_scan_settings(target_id=project_id, preset_id=preset_id,
                                        engine_configuration_id=engine_configuration_id)
-        scan = self.create_new_scan(project_id=project_id)
+        scan = self.create_new_scan(target_id=project_id)
         scan_id = scan.json().get("id")
         while True:
-            scan_status = self.get_sast_scan_details_by_scan_id(id=scan_id).json().get('status').get('name')
+            scan_status = self.get_sast_scan_details_by_scan_id(target_id=scan_id).json().get('status').get('name')
             if scan_status == 'Finished':
                 break
             time.sleep(10)
@@ -686,4 +683,3 @@ class CxRestAPI(object):
         report_outfile = self.get_reports_by_id(report_id=report_id, report_type=report_type).content
         with open(os.path.expanduser(report_name), 'wb') as f:
             f.write(report_outfile)
-
