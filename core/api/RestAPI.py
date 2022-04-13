@@ -68,8 +68,12 @@ class CxRestAPI(object):
                                        url_parameters.get("url_suffix"))
             requests.Session()
             headers = headers or self.headers
-
-            resp = requests.request(method=url_parameters.get("http_method"), headers=self.headers, url=url, data=data)
+            if keyword == 'upload_source_code_zip_file':
+                resp = requests.request(method=url_parameters.get("http_method"),
+                                        headers=self.headers, url=url, files=data)
+            else:
+                resp = requests.request(method=url_parameters.get("http_method"),
+                                        headers=self.headers, url=url, data=data)
             if resp.status_code == 200:
                 if headers.get("Accept") == "application/json;v=1.0" \
                         or headers.get("Accept") != "application/json;v=1.0":
@@ -86,7 +90,8 @@ class CxRestAPI(object):
                 raise requests.exceptions.BaseHTTPError(f" Failed: {resp.text}.")
 
         except Exception as e:
-            raise Exception(e)
+            print(f"X {e}")
+            exit(1)
 
     def get_token(self):
         """
@@ -107,7 +112,7 @@ class CxRestAPI(object):
         url = self.server + self.urls.get("token").get("url_suffix")
         token = requests.post(url=url, data=data).json()
         if 'error' in token:
-            print(f'Invalid username or password: {token["error"]}')
+            print(f'X Invalid username or password: {token["error"]}')
             exit(1)
         return {'Authorization': f"{token['token_type']} {token['access_token']}"}
 
@@ -314,14 +319,13 @@ class CxRestAPI(object):
 
     def upload_source_code_zip_file(self, target_id, zip_path):
         keyword = "upload_source_code_zip_file"
-        url_sub = {"pattern": "{id}",
+        url_sub = {"pattern": "{project_id}",
                    "value": str(target_id)}
-        file_name = zip_path.split()[-1]
-        files = MultipartEncoder(fields={"zippedSource": (file_name,
-                                                          open(zip_path, 'rb'),
-                                                          "application/zip")})
+        file_name = zip_path.rsplit('/')[-1]
+        files = [('zippedSource', (file_name, open(zip_path, 'rb'), "application/zip"))]
         headers = self.headers.copy()
-        headers.update({"Content-Type": files.content_type})
+        # headers.update({"Content-Type": files.content_type})
+        headers.update({"Content-Type": 'application/zip'})
         self.upload_sources(keyword=keyword, url_sub=url_sub, headers=headers, files=files)
 
     def upload_source_code_folder(self, target_id, target_path: str):
@@ -330,7 +334,7 @@ class CxRestAPI(object):
         archive = shutil.make_archive(file_name, 'zip', target_path)
         self.upload_source_code_zip_file(target_id=target_id, zip_path=archive)
 
-    def upload_sources(self, keyword: str, url_sub: dict, headers: dict, files: MultipartEncoder):
+    def upload_sources(self, keyword: str, url_sub: dict, headers: dict, files: list):
         return self.send_requests(keyword=keyword, url_sub=url_sub, headers=headers, data=files)
 
     def set_remote_source_setting_to_git_using_ssh(self, target_id,
