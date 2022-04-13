@@ -106,6 +106,9 @@ class CxRestAPI(object):
                 "client_secret": '014DF517-39D1-4453-B7B3-9930C563627C'}
         url = self.server + self.urls.get("token").get("url_suffix")
         token = requests.post(url=url, data=data).json()
+        if 'error' in token:
+            print(f'Invalid username or password: {token["error"]}')
+            exit(1)
         return {'Authorization': f"{token['token_type']} {token['access_token']}"}
 
     # # 已弃用
