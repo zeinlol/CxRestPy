@@ -28,11 +28,12 @@ def generate_new_report_file(checkmarx, report_type, scan_id, file_name: str):
         file_name = f'Report.{report_type}'
     else:
         file_name = report_path.name
-        report_path = report_path.parents
+        report_path = report_path.parent
     write_to_file(path=report_path, file_name=file_name, data=reports)
 
 
 def write_to_file(path, file_name, data):
-    print(f"* Writing data to file: {path}/{file_name}")
-    with open(os.path.expanduser(file_name), 'wb') as f:
+    full_path = f"{path}/{file_name}"
+    print(f"* Writing data to file: {full_path}")
+    with open(os.path.expanduser(full_path), 'wb') as f:
         f.write(data)
